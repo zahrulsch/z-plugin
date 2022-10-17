@@ -1,23 +1,66 @@
 <script setup lang="ts">
+import { ref } from "vue";
 import ZButton from "./ZButton.vue";
+
+interface Prop {
+  trigger?: "click" | "hover";
+}
+
+const props = defineProps<Prop>();
+
+const active = ref(!1);
+
+const onMouseEnter = () => {
+  if (!props.trigger || props.trigger === "hover") {
+    active.value = true;
+  }
+};
+
+const onMouseLeave = () => {
+  if (!props.trigger || props.trigger === "hover") {
+    active.value = false;
+  }
+};
+
+const onClick = () => {
+  if (props.trigger === "click") {
+    active.value = !active.value;
+  }
+};
 </script>
 
 <template>
-  <div class="z-dropdown">
+  <div
+    class="z-dropdown"
+    @click="onClick"
+    @mouseenter="onMouseEnter"
+    @mouseleave="onMouseLeave"
+  >
     <div class="z-dropdown-trigger" role="none">
-      <slot name="trigger">
+      <slot name="trigger" :active="active">
         <z-button button-type="strict"
           >Choose
           <template #suffix>
-            <i class="bi bi-chevron-down indicator"></i>
+            <i
+              :style="active ? 'transform: rotate(180deg)' : ''"
+              class="bi bi-chevron-down indicator"
+            ></i>
           </template>
         </z-button>
       </slot>
     </div>
     <div class="z-dropdown-content">
-      <div class="z-dropdown-content-container">
+      <div
+        :style="{
+          maxHeight: active ? '600px' : '0',
+          opacity: active ? 1 : 0,
+        }"
+        class="z-dropdown-content-container"
+      >
         <div class="z-dropdown-main">
-          <div v-for="i in 10">Saya Content ke {{ i }}</div>
+          <slot name="content">
+            <div class="z-dropdown-nocontent">Empty Content</div>
+          </slot>
         </div>
       </div>
     </div>
@@ -31,15 +74,6 @@ import ZButton from "./ZButton.vue";
   display: flex;
   flex-direction: column;
 
-  &:hover {
-    .z-dropdown-content-container {
-      max-height: 600px !important;
-      opacity: 1 !important;
-    }
-    .indicator {
-      transform: rotate(180deg);
-    }
-  }
   .indicator {
     transition: 200ms ease;
   }
@@ -71,12 +105,8 @@ import ZButton from "./ZButton.vue";
         background-color: rgb(255, 255, 255);
         padding: 10px;
         color: #444;
-
-        // test
-        div {
-          white-space: nowrap;
-          padding: 5px;
-          cursor: pointer;
+        .z-dropdown-nocontent {
+          color: #999;
         }
       }
     }

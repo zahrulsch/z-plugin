@@ -36,7 +36,9 @@ const menus = ref([
 <template>
   <ZPluginProvider :msg-limit="2">
     <div class="app">
-      <ZDropdown></ZDropdown>
+      <ZDropdown>
+        <template #content> saya konten </template>
+      </ZDropdown>
       <ZSelect placeholder="Pilih Halaman" :options="menus" v-model:value="selected" />
       <ZModal v-model:show="showModal">
         <div class="modal">
